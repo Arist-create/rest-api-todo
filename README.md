@@ -58,8 +58,8 @@ Response: JSON object representing the updated task.*
 Response: JSON object with a message field indicating success.*
 ____
 #### **POST /users**
-*Description: Create a new task.
-*Request body: JSON object with title and description fields.
+*Description: Create a new user.
+*Request body: JSON object with username and password fields.
 Response: JSON object with a message field indicating success.*
 #### **DELETE /users/{user_id}**
 *Description: Delete an existing user.
