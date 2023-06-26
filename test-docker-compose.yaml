@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  db-test:
+    image: postgres:15.1-alpine
+    ports:
+      - "2345:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=postgrestest
+
+
+  app:
+    build: .
+    container_name: test-app
+    command: bash -c "pytest test_main.py"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL_P=postgresql+asyncpg://postgres:mypassword@db-test/postgrestest
+      - SECRET_KEY=abc
+    depends_on:
+      db-test:
+        condition: service_healthy
+

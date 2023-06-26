@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15.1-alpine
+    ports:
+      - "2345:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=postgres
+
+  app:
+    build: .
+    container_name: fastapi-app
+    command: bash -c "uvicorn main:app --host 0.0.0.0"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL_P=postgresql+asyncpg://postgres:mypassword@db/postgres
+      - SECRET_KEY=abc
+    depends_on:
+      db:
+        condition: service_healthy
